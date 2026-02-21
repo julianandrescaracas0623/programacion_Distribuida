@@ -3,6 +3,9 @@ import socket
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 client.connect(("127.0.1", 5000 ))
 
-mensaje = client.recv(1024)
-print(f'Mensaje del servidor: {mensaje.decode()}')
+student_name = input("Ingrese su nombre: ")
+client.sendall(student_name.encode())
+
+response = client.recv(1024).decode()
+print("Respuesta del servidor:", response)
 client.close()
