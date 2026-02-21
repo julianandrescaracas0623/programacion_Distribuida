@@ -1,19 +1,29 @@
 import socket
 import threading
+import time
 
+
+
+contador_clientes = 0 # Variable global para contar clientes conectados
+lock = threading.Lock() # Lock para sincronizar el acceso a la variable contador_clientes
 
 def handle_client(conn, addr):
-    print('Conexion establecida desde {addr}')
+    global contador_clientes
+    time.sleep(5) # Simulamos un proceso que tarda un poco en atender al cliente
     
-    try:
-        student_name = conn.recv(1024).decode()
-        response  = f"Hola, {student_name} estas conectando un servidor concurrente!"
-        conn.sendall(response.encode())
-    except Exception as e:
-        print (f"Error con {addr}: {e}")
-    finally:
-        conn.close()
-        print(f"Conexion cerrada con {addr}")
+    student_name = conn.recv(1024).decode()
+    # Incrementamos el contador de clientes cada vez que se conecta un nuevo cliente
+    with lock:
+        contador_clientes += 1
+        numero = contador_clientes
+    
+    print (f"Cliente conectado desde el puerto: {addr}, Total clientes conectados: {numero}")
+    
+    
+    response = f"Hola, {student_name} estas conectando un servidor concurrente!, eres el cliente  numero: {numero}"
+    conn.sendall(response.encode())
+    
+    conn.close()
         
 # Configuracion del servidor socket
 
